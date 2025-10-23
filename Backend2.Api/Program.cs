@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 // EF Core + SQL Server (läser "Default" från appsettings.json)
 builder.Services.AddDbContext<FreakyDbContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+    opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
 // CORS för din frontend (Vite 5173, CRA 3000)
 const string CorsPolicy = "_freakyCors";
