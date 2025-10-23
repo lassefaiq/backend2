@@ -1,0 +1,22 @@
+# .NET build
+bin/
+obj/
+*.user
+*.rsuser
+.vs/
+
+# macOS / VS Code
+.DS_Store
+.vscode/
+
+# Logs
+*.log
+logs/
+
+# SQLite db-filer (behåll migrations)
+app.db
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
