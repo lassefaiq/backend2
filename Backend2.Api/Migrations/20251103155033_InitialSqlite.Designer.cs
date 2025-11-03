@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend2.Api.Migrations
 {
     [DbContext(typeof(FreakyDbContext))]
-    [Migration("20251103130244_InitialSqlite")]
+    [Migration("20251103155033_InitialSqlite")]
     partial class InitialSqlite
     {
         /// <inheritdoc />
