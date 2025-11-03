@@ -1,7 +1,10 @@
 using Backend2.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Backend2.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<ISlugGenerator, SlugGenerator>();
 
 // MVC Controllers (Web API)
 builder.Services.AddControllers();
