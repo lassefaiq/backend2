@@ -1,0 +1,152 @@
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import { Link } from "react-router-dom";
+import "./Admin.css";
+
+const BASE = import.meta.env.VITE_API_BASE ?? ""; // tom = använd Vite-proxy
+
+export default function Admin() {
+  const [products, setProducts] = useState([]);      // alla produkter från API
+  const [categories, setCategories] = useState([]);  // alla kategorier från API
+  const [selectedCat, setSelectedCat] = useState(null);
+
+  const [openCat, setOpenCat] = useState(false);
+  const catRef = useRef(null);
+
+  // Hämta kategorier
+  useEffect(() => {
+    fetch(`${BASE}/api/categories`)
+      .then(r => (r.ok ? r.json() : Promise.reject(r)))
+      .then(data => setCategories(Array.isArray(data) ? data : []))
+      .catch(err => {
+        console.error("Could not load categories:", err);
+        setCategories([]);
+      });
+  }, []);
+
+  // Hämta produkter (vi hämtar alla och filtrerar lokalt)
+  useEffect(() => {
+    fetch(`${BASE}/api/products`)
+      .then(r => (r.ok ? r.json() : Promise.reject(r)))
+      .then(data => setProducts(Array.isArray(data) ? data : []))
+      .catch(err => {
+        console.error("Error fetching products:", err);
+        setProducts([]);
+      });
+  }, []);
+
+  // Stäng dropdown vid klick utanför
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (catRef.current && !catRef.current.contains(e.target)) setOpenCat(false);
+    };
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, []);
+
+  // Client-side filtrering: om kategori vald, visa bara produkter som har cat.id i categoryIds
+  const visibleProducts = useMemo(() => {
+    if (!selectedCat) return products;
+    return products.filter(p => (p.categoryIds || []).includes(selectedCat.id));
+  }, [products, selectedCat]);
+
+  async function handleDelete(id) {
+    if (!window.confirm("Är du säker på att du vill ta bort produkten?")) return;
+    try {
+      const res = await fetch(`${BASE}/api/products/${id}`, { method: "DELETE" });
+      if (res.status !== 204) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`${res.status} ${res.statusText} ${text}`);
+      }
+      setProducts(prev => prev.filter(p => p.id !== id));
+    } catch (error) {
+      console.error("Fel vid borttagning av produkt:", error);
+      alert("Kunde inte ta bort produkten.");
+    }
+  }
+
+  function handleSelectCategory(cat) {
+    setSelectedCat(cat);
+    setOpenCat(false);
+  }
+
+  return (
+    <div className="admin-container">
+      <aside className="sidebar">
+        <h2>Administration</h2>
+        <nav>
+          <ul>
+            <li><Link to="/admin/products">Produkter</Link></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <div className="admin-content">
+        <h1>Produkter</h1>
+
+        <div className="admin-actions-row">
+          <Link to="/admin/products/new" className="new-product-button">Ny produkt</Link>
+          <Link to="/admin/categories/new" className="new-product-button">Ny kategori</Link>
+
+          <div className={`category-dropdown ${openCat ? "open" : ""}`} ref={catRef}>
+            <button
+              type="button"
+              className="category-toggle"
+              onClick={() => setOpenCat(o => !o)}
+              aria-haspopup="true"
+              aria-expanded={openCat}
+            >
+              {selectedCat ? `Kategorier: ${selectedCat.name}` : "Kategorier"}
+              <span className="caret">▾</span>
+            </button>
+
+            <ul className="dropdown-menu" role="menu">
+              <li>
+                <button type="button" onClick={() => handleSelectCategory(null)}>
+                  Alla produkter
+                </button>
+              </li>
+              {categories.map(c => (
+                <li key={c.id}>
+                  <button type="button" onClick={() => handleSelectCategory(c)}>
+                    {c.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <table className="product-table">
+          <thead>
+            <tr>
+              <th>Namn</th>
+              {/* SKU borttagen – finns inte i vår modell */}
+              <th>Pris</th>
+              <th>Åtgärder</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visibleProducts.map(product => (
+              <tr key={product.id}>
+                <td>{product.name}</td>
+                <td>{Number(product.price).toLocaleString("sv-SE")} SEK</td>
+                <td>
+                  <button className="delete-btn" onClick={() => handleDelete(product.id)}>
+                    Ta bort
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {visibleProducts.length === 0 && (
+              <tr>
+                <td colSpan="3" style={{ textAlign: "center" }}>
+                  Inga produkter hittades.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

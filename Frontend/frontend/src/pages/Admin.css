@@ -1,0 +1,219 @@
+.admin-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #2D4739;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #FFFFFF;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar nav ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar nav ul li a {
+    text-decoration: none;
+    color: #FFFFFF;         
+    font-weight: bold;
+}
+
+.admin-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+h1 {
+    color: #FFFFFF;
+}
+
+/* --- Actions row (Ny produkt + Kategorier) --- */
+.admin-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0 16px 0;
+}
+
+/* Make Kategorier button match Ny produkt */
+.new-product-button,
+.category-toggle {
+    background-color: black;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    font-weight: bold;
+    border: 1px solid #1f1f1f;
+    cursor: pointer;
+}
+
+
+.category-dropdown { position: relative; }
+
+.category-dropdown .caret {
+    font-size: 12px;
+    margin-left: 6px;
+    transition: transform 0.15s ease;
+}
+.category-dropdown.open .caret { transform: rotate(180deg); }
+
+.category-dropdown .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    background: black;
+    border: 1px solid #1f1f1f;
+    border-radius: 8px;
+    padding: 6px 0;
+    min-width: 220px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    display: none;
+    z-index: 1000;
+    list-style: none;
+    margin: 0;
+}
+
+.category-dropdown.open .dropdown-menu { display: block; }
+
+.category-dropdown .dropdown-menu li { list-style: none; }
+
+.category-dropdown .dropdown-menu a {
+    display: block;
+    padding: 10px 14px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.category-dropdown .dropdown-menu a:hover,
+.category-dropdown .dropdown-menu a.active {
+    background: #111;
+    text-decoration: underline;
+}
+
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.product-table th,
+.product-table td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+.product-table th {
+    background-color: #FFFFFF;
+}
+
+tbody {
+    background-color: #FFFFFF;
+}
+
+
+.delete-btn {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #89CFF0;
+}
+
+
+.admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0 16px 0;
+}
+
+
+.admin-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 16px 0;
+}
+
+
+.category-dropdown { position: relative; }
+
+.category-toggle {
+  background-color: black;
+  color: white;
+  padding: 10px 15px;
+  text-decoration: none;
+  border-radius: 5px;
+  display: inline-block;
+  font-weight: bold;
+  border: 1px solid #1f1f1f;
+  cursor: pointer;
+}
+
+.category-dropdown .caret {
+  font-size: 12px;
+  margin-left: 6px;
+  transition: transform 0.15s ease;
+}
+.category-dropdown.open .caret { transform: rotate(180deg); }
+
+
+.category-dropdown .dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  background: black;
+  border: 1px solid #1f1f1f;
+  border-radius: 8px;
+  padding: 6px 0;
+  min-width: 220px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  display: none;
+  z-index: 1000;
+  list-style: none;
+  margin: 0;
+}
+
+.category-dropdown.open .dropdown-menu { display: block; }
+
+
+.category-dropdown .dropdown-menu li { list-style: none; }
+
+.category-dropdown .dropdown-menu button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 10px 14px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.category-dropdown .dropdown-menu button:hover,
+.category-dropdown .dropdown-menu button:focus {
+  background: #111;
+  text-decoration: underline;
+  outline: none;
+}
