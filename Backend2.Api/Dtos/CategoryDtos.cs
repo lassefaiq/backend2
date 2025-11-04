@@ -7,5 +7,6 @@ public record CategoryReadDto(
     string Name,
     string? Image,
     string Slug,
-    List<int> ProductIds
+    List<int> ProductIds,
+    List<ProductReadDto> Products
 );

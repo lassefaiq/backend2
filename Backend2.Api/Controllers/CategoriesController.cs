@@ -15,12 +15,31 @@ public class CategoriesController(FreakyDbContext db, ISlugGenerator slugs) : Co
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryReadDto>>> GetAll([FromQuery] string? slug)
     {
-        var q = db.Categories.Include(c => c.Products).AsQueryable();
-        if (!string.IsNullOrWhiteSpace(slug)) q = q.Where(c => c.Slug == slug);
+        var q = db.Categories
+                  .Include(c => c.Products)
+                  .AsQueryable();
 
-        var list = await q.Select(c => new CategoryReadDto(
-            c.Id, c.Name, c.Image, c.Slug, c.Products.Select(p => p.Id).ToList()
-        )).ToListAsync();
+        if (!string.IsNullOrWhiteSpace(slug))
+            q = q.Where(c => c.Slug == slug);
+
+        var list = await q
+            .Select(c => new CategoryReadDto(
+                c.Id,
+                c.Name,
+                c.Image,
+                c.Slug,
+                c.Products.Select(p => p.Id).ToList(), // ProductIds
+                c.Products.Select(p => new ProductReadDto( // Products
+                    p.Id,
+                    p.Name,
+                    p.Description,
+                    p.Price,
+                    p.Image,
+                    p.UrlSlug,
+                    p.Categories.Select(x => x.Id).ToList()
+                )).ToList()
+            ))
+            .ToListAsync();
 
         return Ok(list);
     }
@@ -29,12 +48,60 @@ public class CategoriesController(FreakyDbContext db, ISlugGenerator slugs) : Co
     [HttpGet("{id:int}")]
     public async Task<ActionResult<CategoryReadDto>> GetOne(int id)
     {
-        var c = await db.Categories.Include(c => c.Products).FirstOrDefaultAsync(c => c.Id == id);
+        var c = await db.Categories
+                        .Include(c => c.Products)
+                        .FirstOrDefaultAsync(c => c.Id == id);
+
         if (c is null) return NotFound();
 
-        return Ok(new CategoryReadDto(
-            c.Id, c.Name, c.Image, c.Slug, c.Products.Select(p => p.Id).ToList()
-        ));
+        var dto = new CategoryReadDto(
+            c.Id,
+            c.Name,
+            c.Image,
+            c.Slug,
+            c.Products.Select(p => p.Id).ToList(),
+            c.Products.Select(p => new ProductReadDto(
+                p.Id,
+                p.Name,
+                p.Description,
+                p.Price,
+                p.Image,
+                p.UrlSlug,
+                p.Categories.Select(x => x.Id).ToList()
+            )).ToList()
+        );
+
+        return Ok(dto);
+    }
+
+    // GET /api/categories/slug/{slug}
+    [HttpGet("slug/{slug}")]
+    public async Task<ActionResult<CategoryReadDto>> GetBySlug(string slug)
+    {
+        var c = await db.Categories
+                        .Include(x => x.Products)
+                        .FirstOrDefaultAsync(x => x.Slug == slug);
+
+        if (c is null) return NotFound();
+
+        var dto = new CategoryReadDto(
+            c.Id,
+            c.Name,
+            c.Image,
+            c.Slug,
+            c.Products.Select(p => p.Id).ToList(),
+            c.Products.Select(p => new ProductReadDto(
+                p.Id,
+                p.Name,
+                p.Description,
+                p.Price,
+                p.Image,
+                p.UrlSlug,
+                p.Categories.Select(x => x.Id).ToList()
+            )).ToList()
+        );
+
+        return Ok(dto);
     }
 
     // POST /api/categories
@@ -49,7 +116,15 @@ public class CategoriesController(FreakyDbContext db, ISlugGenerator slugs) : Co
         db.Categories.Add(cat);
         await db.SaveChangesAsync();
 
-        var read = new CategoryReadDto(cat.Id, cat.Name, cat.Image, cat.Slug, new List<int>());
+        var read = new CategoryReadDto(
+            cat.Id,
+            cat.Name,
+            cat.Image,
+            cat.Slug,
+            new List<int>(),
+            new List<ProductReadDto>()
+        );
+
         return CreatedAtAction(nameof(GetOne), new { id = cat.Id }, read);
     }
 

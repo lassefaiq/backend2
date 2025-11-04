@@ -81,4 +81,21 @@ public class ProductsController(FreakyDbContext db, ISlugGenerator slugs) : Cont
         await db.SaveChangesAsync();
         return NoContent();
     }
+
+    [HttpGet("slug/{slug}")]
+    public async Task<ActionResult<ProductReadDto>> GetBySlug(string slug)
+    {
+        var p = await db.Products
+            .AsNoTracking()
+            .Include(x => x.Categories)
+            .FirstOrDefaultAsync(x => x.UrlSlug == slug);
+
+        if (p is null) return NotFound();
+
+        return Ok(new ProductReadDto(
+            p.Id, p.Name, p.Description, p.Price, p.Image, p.UrlSlug, p.Categories.Select(c => c.Id).ToList()
+        ));
+    }
 }
+
+
