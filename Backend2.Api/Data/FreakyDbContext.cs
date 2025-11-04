@@ -10,7 +10,7 @@ public class FreakyDbContext(DbContextOptions<FreakyDbContext> options) : DbCont
 
     protected override void OnModelCreating(ModelBuilder b)
     {
-        // Indexer (ej unika enligt uppgiften)
+        // Indexer 
         b.Entity<Product>().HasIndex(p => p.UrlSlug);
         b.Entity<Category>().HasIndex(c => c.Slug);
 
